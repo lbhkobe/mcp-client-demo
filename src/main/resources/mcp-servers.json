@@ -1,0 +1,16 @@
+{
+  "puppeteer": {
+    "command": "npx",
+    "args": ["-y", "@modelcontextprotocol/server-puppeteer"],
+    "env": {
+      "NODE_ENV": "production"
+    }
+  },
+  "calculator": {
+    "command": "npx",
+    "args": ["-y", "@modelcontextprotocol/server-calculator"],
+    "env": {
+      "NODE_ENV": "production"
+    }
+  }
+}
