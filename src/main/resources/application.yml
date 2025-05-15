@@ -5,27 +5,26 @@ spring:
   application:
     name: mcp-server
   ai:
-    openai:
-      api-key: ${OPENAI_API_KEY:your-api-key-here}
-      base-url: ${OPENAI_BASE_URL:https://api.openai.com}
+    ollama: # 引入ollama配置
+      base-url: http://localhost:11434
+      init:
+        pull-model-strategy: never # 是否在启动时拉取模型以及如何拉取。
+        timeout: 60s # 拉取模型超时时间。
       chat:
-        options:
-          model: gpt-3.5-turbo
-          temperature: 0.7
-  mcp:
-    server:
-      name: spring-ai-mcp-server    # MCP服务器名称
-      version: 1.0.0                # 服务器版本号
-      type: ASYNC #异步
-
-mcp:
-  external:
-    servers:
-      config-path: mcp-servers.json
-
-  # 可以配置多个外部MCP服务器，用逗号分隔
-  # 例如: https://external-mcp-server1.com,https://external-mcp-server2.com
-  #mcp.external.servers.config.path=/home/ubuntu/mcp-servers.json # Path to the JSON config for external MCP servers
+        model: qwen2.5:0.5b #deepseek-r1:latest #要使用的支持的模型的名称。
+    model: # ai模型选择
+      chat: ollama # 启用Ollama聊天模型。
+    mcp: # 启用MCP
+      client:  # MCP CLIENT配置
+        #stdio:
+          # servers-configuration: classpath:/mcp-servers.json
+        type: async
+        request-timeout: 60s
+        sse:
+          connections:
+              server1:
+                url: https://mcp.amap.com
+                sse-endpoint: /sse?key=2549fa069752fb0ec89ed9e409690044
 
 
 logging:
