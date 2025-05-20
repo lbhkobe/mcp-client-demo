@@ -1,14 +1,15 @@
-package com.example.mcp.service;
+package com.example.mcp.tools;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.tool.annotation.Tool;
-import org.springframework.stereotype.Service;
 import java.util.Map;
 
-@Service
-public class WeatherService {
-    private static final Logger log = LoggerFactory.getLogger(WeatherService.class);
+
+public class WeatherTools {
+
+    private static final Logger log = LoggerFactory.getLogger(WeatherTools.class);
+
     @Tool(description = "根据城市名称获取天气预报")
     public String getWeatherByCity(String city) {
         log.info("===============getWeatherByCity方法被调用：city="+city);

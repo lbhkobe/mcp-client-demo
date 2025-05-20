@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
-    <artifactId>xycs</artifactId>
+    <artifactId>mcp-client-demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>mcp-server-client</name>
-    <description>mcp server和client建设</description>
+    <name>mcp-client-demo</name>
+    <description>mcp client使用示例</description>
     <url/>
     <licenses>
         <license/>
@@ -39,9 +39,15 @@
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-mcp-client</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-mcp-server-webmvc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-mcp-server-webflux</artifactId>
         </dependency>
 
         <dependency>

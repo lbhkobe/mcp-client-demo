@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: mcp-server
+    name: mcp-client
   ai:
     ollama: # 引入ollama配置
       base-url: http://localhost:11434
@@ -11,7 +11,7 @@ spring:
         pull-model-strategy: never # 是否在启动时拉取模型以及如何拉取。
         timeout: 60s # 拉取模型超时时间。
       chat:
-        model: qwen2.5:0.5b #deepseek-r1:latest #要使用的支持的模型的名称。
+        model: qwen2.5:7b #deepseek-r1:latest #要使用的支持的模型的名称。
     model: # ai模型选择
       chat: ollama # 启用Ollama聊天模型。
     mcp: # 启用MCP
