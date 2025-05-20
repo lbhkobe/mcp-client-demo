@@ -1,10 +1,8 @@
 package com.example.mcp.controller;
 
-import com.example.mcp.tools.WeatherTools;
 import com.example.mcp.tools.DateTimeTools;
 import io.modelcontextprotocol.client.McpAsyncClient;
 import io.modelcontextprotocol.spec.McpSchema;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
@@ -24,6 +22,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
+import java.time.Duration;
 
 @RestController
 @RequestMapping("/chatModel")
@@ -33,9 +32,18 @@ public class ChatController {
 
     private final OllamaChatModel chatModel;
 
+    private final ChatClient chatClient;
+
     @Autowired
-    public ChatController(OllamaChatModel chatModel) {
+    public ChatController(OllamaChatModel chatModel, ChatClient.Builder chatClientBuilder, ToolCallbackProvider toolCallbackProvider) {
         this.chatModel = chatModel;
+        this.chatClient = chatClientBuilder
+                .defaultTools()
+                .defaultSystem("你是一个百科助手，能够借助外部工具，使用中文回答用户问题.")
+                .defaultToolCallbacks(toolCallbackProvider)
+                //.defaultTools(toolCallbackProvider)
+                //.defaultAdvisors(null)
+                .build();
     }
 
     @GetMapping("/ai/generate")
@@ -94,10 +102,24 @@ public class ChatController {
                 .user(userQuestion)
                 .system("你是一个百科助手，能够借助外部工具，使用中文回答用户问题.")
                 .toolCallbacks(toolCallbackProvider)
-                .tools(new DateTimeTools(),new WeatherTools()) //外部工具集合
+                //.tools(new DateTimeTools(),new WeatherTools()) //外部工具集合
                 .call()
                 .content();
         System.out.println(response);
         return response;
+    }
+
+    @RequestMapping("/chatUseMcpServer2")
+    public Flux<ChatResponse> chatUseMcpServer2(String userQuestion) {
+        try {
+            logger.info("开始处理chatUseMcpServer2请求: {}", userQuestion);
+            return chatClient.prompt().user(userQuestion).stream().chatResponse()
+                    .timeout(Duration.ofSeconds(100)) // 设置响应流的超时时间
+                    .doOnError(e -> logger.error("处理chatUseMcpServer2请求时发生错误: {}", e.getMessage()))
+                    .doOnComplete(() -> logger.info("chatUseMcpServer2请求处理完成"));
+        } catch (Exception e) {
+            logger.error("chatUseMcpServer2请求处理异常: {}", e.getMessage(), e);
+            return Flux.error(e);
+        }
     }
 }
