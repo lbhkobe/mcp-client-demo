@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="WARN"> <!-- status="WARN" 表示 Logback 自身的日志级别为 WARN（可选：DEBUG/INFO） -->
+
+    <!-- 定义日志输出格式 -->
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%method:%line] - %msg%n"/>
+    <!-- 
+        格式说明：
+        %d{yyyy-MM-dd HH:mm:ss.SSS} : 时间（精确到毫秒）
+        [%thread] : 线程名
+        %-5level : 日志级别（左对齐，宽度5）
+        %logger{36} : 日志记录器名称（截断到36字符）
+        %msg%n : 日志消息 + 换行符
+    -->
+
+    <!-- 控制台输出（Console Appender） -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern> <!-- 使用上面定义的格式 -->
+        </encoder>
+    </appender>
+
+    <!-- 文件输出（File Appender） -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/app.log</file> <!-- 日志文件路径 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 按天滚动日志文件，保留30天的历史日志 -->
+            <fileNamePattern>logs/app.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern> <!-- 使用相同的格式 -->
+        </encoder>
+    </appender>
+
+    <!-- 错误日志单独输出（Error File Appender） -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/error.log</file> <!-- 错误日志文件路径 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/error.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level> <!-- 只记录 ERROR 及以上级别的日志 -->
+        </filter>
+    </appender>
+
+    <!-- 日志记录器（Logger）配置 -->
+    <root level="INFO"> <!-- 根日志级别，默认为 INFO -->
+        <appender-ref ref="CONSOLE"/> <!-- 输出到控制台 -->
+        <appender-ref ref="FILE"/> <!-- 输出到文件 -->
+    </root>
+
+    <!-- 特定包的日志级别覆盖（可选） -->
+    <logger name="com.example.myapp" level="DEBUG" additivity="false"> <!-- 某个包的日志级别设为 DEBUG -->
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <!-- Spring Boot 默认的日志级别（可选） -->
+    <logger name="org.springframework" level="WARN"/> <!-- Spring 框架日志设为 WARN（减少冗余日志） -->
+    <logger name="org.hibernate" level="WARN"/> <!-- Hibernate 日志设为 WARN -->
+</configuration>

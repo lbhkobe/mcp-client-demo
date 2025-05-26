@@ -35,6 +35,10 @@ public class ChatController {
     private final ChatClient chatClient;
 
     @Autowired
+    ToolCallbackProvider toolCallbackProvider;
+
+
+    @Autowired
     public ChatController(OllamaChatModel chatModel, ChatClient.Builder chatClientBuilder, ToolCallbackProvider toolCallbackProvider) {
         this.chatModel = chatModel;
         this.chatClient = chatClientBuilder
@@ -57,8 +61,13 @@ public class ChatController {
         return this.chatModel.stream(prompt);
     }
 
+    /**
+     * 大模型交互时使用定义的Tool
+     * @param message
+     * @return
+     */
     @RequestMapping("/chatUseMcpTool")
-    public String chatUseMcpTool(String message) {
+    public String chatUseMcpTool(@RequestParam String message) {
 
         String response = ChatClient.create(chatModel)
                 .prompt(message) //用户问题，也可以传系统/用户提示词
@@ -70,31 +79,16 @@ public class ChatController {
         return response;
     }
 
-    @Autowired
-    List<McpAsyncClient> mcpAsyncClients;
 
-    @RequestMapping("/test")
-    public Mono<McpSchema.CallToolResult> test() {
-        var mcpClient = mcpAsyncClients.get(0);
-
-        return mcpClient.listTools()
-                .flatMap(tools -> {
-                    logger.info("tools: {}", tools);
-                    return mcpClient.callTool(
-                            new McpSchema.CallToolRequest(
-                                    "maps_text_search",
-                                    Map.of("keywords", "烧烤",  "city", "青岛" ,"citylimit", true)
-                            )
-                    );
-                });
-    }
-
-    @Autowired
-    ToolCallbackProvider toolCallbackProvider;
-
-
+    /**
+     * 大模型交互时使用外部mcp server ------- 方式1
+     * @param userQuestion
+     * @return
+     */
     @RequestMapping("/chatUseMcpServer")
-    public String chatUseMcpServer(String userQuestion) {
+    public String chatUseMcpServer(@RequestParam String userQuestion) {
+
+        logger.info("开始处理chatUseMcpServer请求: {}", userQuestion);
 
         Prompt prompt = new Prompt(new UserMessage(userQuestion),new SystemMessage("你是一个百科助手，能够借助外部工具，使用中文回答用户问题."));
         String response = ChatClient.create(chatModel)
@@ -109,13 +103,18 @@ public class ChatController {
         return response;
     }
 
+    /**
+     * 大模型交互时使用外部mcp server ------- 方式2
+     * @param userQuestion
+     * @return
+     */
     @RequestMapping("/chatUseMcpServer2")
     public Flux<ChatResponse> chatUseMcpServer2(String userQuestion) {
         try {
             logger.info("开始处理chatUseMcpServer2请求: {}", userQuestion);
             return chatClient.prompt().user(userQuestion).stream().chatResponse()
                     .timeout(Duration.ofSeconds(100)) // 设置响应流的超时时间
-                    .doOnError(e -> logger.error("处理chatUseMcpServer2请求时发生错误: {}", e.getMessage()))
+                    .doOnError(e -> logger.error("处理chatUseMcpServer2请求时发生错误,", e))
                     .doOnComplete(() -> logger.info("chatUseMcpServer2请求处理完成"));
         } catch (Exception e) {
             logger.error("chatUseMcpServer2请求处理异常: {}", e.getMessage(), e);

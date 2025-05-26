@@ -16,18 +16,20 @@ spring:
       chat: ollama # 启用Ollama聊天模型。
     mcp: # 启用MCP
       client:  # MCP CLIENT配置
-        #stdio:
-          # servers-configuration: classpath:/mcp-servers.json
         type: async
         request-timeout: 10s
+#        stdio:
+#         servers-configuration: classpath:/mcp-servers-config.json
         sse:
           connections:
-              server1:
+            server1:
                 url: https://mcp.amap.com
                 sse-endpoint: /sse?key=2549fa069752fb0ec89ed9e409690044
-#              msc-product-mcp-server:
-#                url: http://localhost:8082
+            msc-product-mcp-server:
+                url: http://localhost:8082
 #                sse-endpoint: /mcp/queryProduct
+#            server3:
+#               url: https://mcp-09724909-442f-4b85.api-inference.modelscope.cn
 
 
 logging:
