@@ -29,16 +29,16 @@ public class McpConfig {
      *
      * @return McpClientTransport
      */
-    @Bean
-    public List<NamedClientMcpTransport> mcpClientTransport() {
-        McpClientTransport transport = HttpClientSseClientTransport
-                .builder("https://mcp.amap.com")
-                .sseEndpoint("/sse?key=2549fa069752fb0ec89ed9e409690044")
-                .objectMapper(new ObjectMapper())
-                .build();
-
-        return Collections.singletonList(new NamedClientMcpTransport("amap", transport));
-    }
+//    @Bean
+//    public List<NamedClientMcpTransport> mcpClientTransport() {
+//        McpClientTransport transport = HttpClientSseClientTransport
+//                .builder("https://mcp.amap.com")
+//                .sseEndpoint("/sse?key=2549fa069752fb0ec89ed9e409690044")
+//                .objectMapper(new ObjectMapper())
+//                .build();
+//
+//        return Collections.singletonList(new NamedClientMcpTransport("amap", transport));
+//    }
 
 
 //    @Bean

@@ -11,6 +11,7 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.ollama.OllamaChatModel;
+import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +31,7 @@ public class ChatController {
 
     private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
 
-    private final OllamaChatModel chatModel;
+    private final OpenAiChatModel chatModel;
 
     private final ChatClient chatClient;
 
@@ -39,7 +40,7 @@ public class ChatController {
 
 
     @Autowired
-    public ChatController(OllamaChatModel chatModel, ChatClient.Builder chatClientBuilder, ToolCallbackProvider toolCallbackProvider) {
+    public ChatController(OpenAiChatModel chatModel, ChatClient.Builder chatClientBuilder, ToolCallbackProvider toolCallbackProvider) {
         this.chatModel = chatModel;
         this.chatClient = chatClientBuilder
                 .defaultTools()
@@ -68,7 +69,6 @@ public class ChatController {
      */
     @RequestMapping("/chatUseMcpTool")
     public String chatUseMcpTool(@RequestParam String message) {
-
         String response = ChatClient.create(chatModel)
                 .prompt(message) //用户问题，也可以传系统/用户提示词
                 .tools(new DateTimeTools()) //外部工具集合
@@ -96,7 +96,7 @@ public class ChatController {
                 .user(userQuestion)
                 .system("你是一个百科助手，能够借助外部工具，使用中文回答用户问题.")
                 .toolCallbacks(toolCallbackProvider)
-                //.tools(new DateTimeTools(),new WeatherTools()) //外部工具集合
+                .tools(new DateTimeTools()) //外部工具集合
                 .call()
                 .content();
         System.out.println(response);
